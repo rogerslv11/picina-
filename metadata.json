@@ -1,0 +1,6 @@
+{
+  "name": "PiscinaClean Pro",
+  "description": "Website institucional moderno e elegante para serviços profissionais de limpeza, tratamento e manutenção de piscinas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
