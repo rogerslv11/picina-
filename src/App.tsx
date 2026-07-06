@@ -33,7 +33,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-bg-soft text-slate-800 antialiased font-sans flex flex-col justify-between">
+    <div className="min-h-screen bg-bg-soft text-slate-800 antialiased font-sans flex flex-col justify-between overflow-x-hidden">
       {/* Premium Aquatic Preloader Splash */}
       <Preloader />
 

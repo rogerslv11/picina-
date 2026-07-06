@@ -92,11 +92,24 @@ export default function Gallery() {
   };
 
   useEffect(() => {
+    const handleWindowMouseMove = (e: MouseEvent) => {
+      if (isDragging.current) handleMove(e.clientX);
+    };
+
+    const handleWindowTouchMove = (e: TouchEvent) => {
+      if (isDragging.current) handleMove(e.touches[0].clientX);
+    };
+
     window.addEventListener('mouseup', handleMouseUp);
     window.addEventListener('touchend', handleMouseUp);
+    window.addEventListener('mousemove', handleWindowMouseMove);
+    window.addEventListener('touchmove', handleWindowTouchMove, { passive: true });
+
     return () => {
       window.removeEventListener('mouseup', handleMouseUp);
       window.removeEventListener('touchend', handleMouseUp);
+      window.removeEventListener('mousemove', handleWindowMouseMove);
+      window.removeEventListener('touchmove', handleWindowTouchMove);
     };
   }, []);
 
@@ -222,12 +235,7 @@ export default function Gallery() {
               <div className="lg:col-span-8 flex flex-col">
                 <div 
                   ref={sliderContainerRef}
-                  onMouseMove={(e) => {
-                    if (isDragging.current) handleMove(e.clientX);
-                  }}
-                  onTouchMove={(e) => {
-                    if (isDragging.current) handleMove(e.touches[0].clientX);
-                  }}
+                  onClick={(e) => handleMove(e.clientX)}
                   className="relative w-full h-[24rem] sm:h-[30rem] rounded-3.5xl overflow-hidden select-none cursor-ew-resize border border-slate-100 shadow-2xl shadow-blue-500/5 bg-slate-100"
                 >
                   {/* AFTER STATE IMAGE (Background) */}

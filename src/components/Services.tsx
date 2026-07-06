@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Sparkles, 
@@ -16,6 +16,101 @@ import {
 } from 'lucide-react';
 import { Service } from '../types';
 import { servicesData } from '../mockData';
+
+interface ServiceCardProps {
+  service: Service;
+  onClick: () => void;
+  renderIcon: (name: string) => React.ReactNode;
+  key?: React.Key;
+}
+
+function ServiceCard({ service, onClick, renderIcon }: ServiceCardProps) {
+  const [coords, setCoords] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    setCoords({ x, y });
+
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    // Calculate tilt: subtle angles of up to 12 degrees
+    const rotateX = ((centerY - y) / centerY) * 12;
+    const rotateY = ((x - centerX) / centerX) * 12;
+
+    setTilt({ x: rotateX, y: rotateY });
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setTilt({ x: 0, y: 0 });
+  };
+
+  return (
+    <div
+      onClick={onClick}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale3d(${isHovered ? 1.025 : 1}, ${isHovered ? 1.025 : 1}, 1)`,
+        transition: isHovered ? 'transform 0.08s ease-out, shadow 0.3s ease' : 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), shadow 0.5s ease',
+        transformStyle: 'preserve-3d',
+      }}
+      className="gsap-stagger-item group relative bg-white rounded-3xl p-6 sm:p-7 border border-slate-100 hover:border-primary/25 hover:shadow-2xl hover:shadow-blue-500/10 cursor-pointer flex flex-col justify-between overflow-hidden"
+    >
+      {/* Glare/Shine Effect Spotlight */}
+      <div
+        className="pointer-events-none absolute inset-0 transition-opacity duration-300 z-10"
+        style={{
+          opacity: isHovered ? 0.6 : 0,
+          background: `radial-gradient(circle 140px at ${coords.x}px ${coords.y}px, rgba(14, 165, 233, 0.16), transparent 80%)`,
+        }}
+      />
+      
+      {/* Secondary premium subtle ambient white shine */}
+      <div
+        className="pointer-events-none absolute inset-0 transition-opacity duration-500 z-10"
+        style={{
+          opacity: isHovered ? 0.4 : 0,
+          background: `radial-gradient(circle 240px at ${coords.x}px ${coords.y}px, rgba(255, 255, 255, 0.25), transparent 100%)`,
+        }}
+      />
+
+      <div style={{ transform: 'translateZ(24px)' }} className="transition-transform duration-300 relative z-20">
+        {/* Icon Circle */}
+        <div className="w-12 h-12 rounded-2xl bg-blue-50 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300 shadow-sm">
+          {renderIcon(service.iconName)}
+        </div>
+
+        {/* Info */}
+        <h3 className="font-display font-bold text-lg text-slate-900 mt-6 group-hover:text-primary transition-colors">
+          {service.title}
+        </h3>
+        
+        <p className="text-sm text-slate-500 mt-3 line-clamp-3 leading-relaxed">
+          {service.description}
+        </p>
+      </div>
+
+      {/* Card Footer Link */}
+      <div 
+        style={{ transform: 'translateZ(12px)' }}
+        className="mt-6 pt-4 border-t border-slate-50 flex items-center justify-between text-xs font-semibold text-primary transition-transform duration-300 relative z-20"
+      >
+        <span>Ver cronograma</span>
+        <div className="w-6 h-6 rounded-full bg-blue-50 group-hover:bg-primary group-hover:text-white flex items-center justify-center transition-all duration-300">
+          <ArrowRight className="w-3.5 h-3.5" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Services() {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
@@ -58,35 +153,12 @@ export default function Services() {
         {/* Animated Service Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 gsap-stagger-container">
           {servicesData.map((service, idx) => (
-            <div
+            <ServiceCard 
               key={service.id}
+              service={service}
               onClick={() => setSelectedService(service)}
-              className="gsap-stagger-item group relative bg-white rounded-3xl p-6 sm:p-7 border border-slate-100 hover:border-primary/20 hover:shadow-2xl hover:shadow-blue-500/5 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between"
-            >
-              <div>
-                {/* Icon Circle */}
-                <div className="w-12 h-12 rounded-2xl bg-blue-50 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                  {renderIcon(service.iconName)}
-                </div>
-
-                {/* Info */}
-                <h3 className="font-display font-bold text-lg text-slate-900 mt-6 group-hover:text-primary transition-colors">
-                  {service.title}
-                </h3>
-                
-                <p className="text-sm text-slate-500 mt-3 line-clamp-3 leading-relaxed">
-                  {service.description}
-                </p>
-              </div>
-
-              {/* Card Footer Link */}
-              <div className="mt-6 pt-4 border-t border-slate-50 flex items-center justify-between text-xs font-semibold text-primary">
-                <span>Ver cronograma</span>
-                <div className="w-6 h-6 rounded-full bg-blue-50 group-hover:bg-primary group-hover:text-white flex items-center justify-center transition-all duration-300">
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </div>
-              </div>
-            </div>
+              renderIcon={renderIcon}
+            />
           ))}
         </div>
 

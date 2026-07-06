@@ -38,10 +38,13 @@ export default function Hero({ onCtaClick }: HeroProps) {
         <AnimatePresence mode="wait">
           <motion.div
             key={currentSlide}
-            initial={{ opacity: 0, scale: 1.12 }}
-            animate={{ opacity: 1, scale: 1.02 }}
-            exit={{ opacity: 0, scale: 1 }}
-            transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0, scale: 1.15 }}
+            animate={{ opacity: 1, scale: 1.03 }}
+            exit={{ opacity: 0 }}
+            transition={{
+              opacity: { duration: 1.4, ease: [0.16, 1, 0.3, 1] },
+              scale: { duration: 6.5, ease: 'linear' }
+            }}
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: `url('${heroImages[currentSlide]}')` }}
           />
@@ -153,25 +156,46 @@ export default function Hero({ onCtaClick }: HeroProps) {
       {/* Glass Statistics Overlay (Sticky layout element at bottom) */}
       <div className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 sm:mt-12">
         <motion.div
-          initial={{ opacity: 0, y: 35 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7, duration: 0.95, ease: [0.16, 1, 0.3, 1] }}
-          className="glass-card bg-black border border-white/10 backdrop-blur-2xl grid grid-cols-2 md:grid-cols-4 gap-6 p-6 sm:p-8 rounded-3xl"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: { opacity: 0, y: 35 },
+            visible: {
+              opacity: 1,
+              y: 0,
+              transition: {
+                delayChildren: 0.6,
+                staggerChildren: 0.1,
+                duration: 0.95,
+                ease: [0.16, 1, 0.3, 1]
+              }
+            }
+          }}
+          className="bg-black border border-white/20 grid grid-cols-2 md:grid-cols-4 gap-6 p-6 sm:p-8 rounded-3xl"
         >
           {stats.map((stat, idx) => (
-            <div 
+            <motion.div 
               key={idx} 
-              className={`flex flex-col items-center justify-center text-center p-2 transition-all duration-300 hover:scale-102 ${
-                idx !== stats.length - 1 ? 'border-r-0 border-b border-white/5 pb-6 md:pb-2 md:border-b-0 md:border-r md:border-white/10' : ''
+              variants={{
+                hidden: { opacity: 0, y: 20, scale: 0.96 },
+                visible: { 
+                  opacity: 1, 
+                  y: 0, 
+                  scale: 1, 
+                  transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1] } 
+                }
+              }}
+              className={`flex flex-col items-center justify-center text-center p-2 transition-all duration-300 hover:scale-105 ${
+                idx !== stats.length - 1 ? 'border-r-0 border-b border-white/10 pb-6 md:pb-2 md:border-b-0 md:border-r md:border-white/20' : ''
               }`}
             >
-              <span className="font-display font-black text-2xl sm:text-3.5xl lg:text-4.5xl text-transparent bg-clip-text bg-gradient-to-r from-accent via-blue-100 to-white tracking-tight">
+              <span className="font-display font-black text-2xl sm:text-3.5xl lg:text-4.5xl text-white tracking-tight">
                 {stat.value}
               </span>
-              <span className="mt-2 text-xs sm:text-sm font-semibold text-slate-300 tracking-wide">
+              <span className="mt-2 text-xs sm:text-sm font-semibold text-white/90 tracking-wide">
                 {stat.label}
               </span>
-            </div>
+            </motion.div>
           ))}
         </motion.div>
       </div>
