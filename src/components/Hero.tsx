@@ -156,7 +156,7 @@ export default function Hero({ onCtaClick }: HeroProps) {
           initial={{ opacity: 0, y: 35 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7, duration: 0.95, ease: [0.16, 1, 0.3, 1] }}
-          className="glass-card bg-slate-950/40 border border-white/10 backdrop-blur-2xl grid grid-cols-2 md:grid-cols-4 gap-6 p-6 sm:p-8 rounded-3xl"
+          className="glass-card bg-black border border-white/10 backdrop-blur-2xl grid grid-cols-2 md:grid-cols-4 gap-6 p-6 sm:p-8 rounded-3xl"
         >
           {stats.map((stat, idx) => (
             <div 
